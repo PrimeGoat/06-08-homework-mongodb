@@ -1,0 +1,27 @@
+{
+  "name": "06-08-homework-mongodb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PrimeGoat/06-08-homework-mongodb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PrimeGoat/06-08-homework-mongodb/issues"
+  },
+  "homepage": "https://github.com/PrimeGoat/06-08-homework-mongodb#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.8",
+    "morgan": "^1.10.0"
+  }
+}
