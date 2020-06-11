@@ -82,7 +82,7 @@ MongoClient.connect(uri, {
 
 	app.delete('/delete/:name', (req, res) => {
 		placesCollection.deleteMany({
-			name: req.params.name
+			"name": req.params.name
 		})
 		.then(val => {
 			return res.status(200).json({ confirmation: 'success', message: `${val.deletedCount} Record(s) with name ${req.params.name} deleted`});
