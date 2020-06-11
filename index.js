@@ -80,6 +80,18 @@ MongoClient.connect(uri, {
 		return res.status(200).json({ confirmation: 'success', message: 'Collection Dropped'});
 	});
 
+	app.delete('/delete/:name', (req, res) => {
+		placesCollection.deleteMany({
+			name: req.params.name
+		})
+		.then(val => {
+			return res.status(200).json({ confirmation: 'success', message: `${val.deletedCount} Record(s) with name ${req.params.name} deleted`});
+		})
+		.catch(err => {
+			return res.status(500).json({ confirmation: 'failed', message: err});
+		})
+	});
+
 	app.post('/insertone', (req, res) => {
 		placesCollection.insertOne(req.body)
 		.then(val => {
