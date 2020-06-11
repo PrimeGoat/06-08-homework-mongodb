@@ -80,6 +80,7 @@ MongoClient.connect(uri, {
 		return res.status(200).json({ confirmation: 'success', message: 'Collection Dropped'});
 	});
 
+	// This isn't working
 	app.delete('/delete/:name', (req, res) => {
 		placesCollection.deleteMany({
 			"name": req.params.name
