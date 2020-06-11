@@ -29,13 +29,14 @@ MongoClient.connect(uri, {
 				console.log("Count is ", val);
 			})
 
-		// router.get('/getAllGames', (req, res) => {
-		// 	if(games.length == 0) {
-		// 		return res.status(404).json({confirmation: 'failed', message: "No games found"});
-		// 	}
-		// 	return res.status(200).json({ confirmation: 'success', games });
-		// });
 		return res.status(200).json({ confirmation: 'success'});
+	});
+
+	app.get('/count', (req, res)=>{
+		placesCollection.countDocuments()
+		.then(val => {
+			return res.status(200).json({confirmation: 'success', message: `# of documents: ${val}`});
+		})
 	});
 
 	app.get('/create', (req, res) => {
@@ -47,11 +48,11 @@ MongoClient.connect(uri, {
 				.then(val => {
 					console.log("Deleted records: ", val.deletedCount);
 				}).then(val => {
-					console.log("Creating collection");
+					console.log("Documents created");
 					addCollection(placesCollection);
 				});
 			} else {
-				console.log("Creating collection");
+				console.log("Documents created");
 				addCollection(placesCollection);
 			}
 		});
@@ -72,6 +73,72 @@ MongoClient.connect(uri, {
 			})
 
 		return res.status(200).json({ confirmation: 'success', message: 'cleared'});
+	});
+
+	app.get('/remove', (req, res) => {
+		placesCollection.drop();
+		return res.status(200).json({ confirmation: 'success', message: 'Collection Dropped'});
+	});
+
+	app.post('/insertone', (req, res) => {
+		placesCollection.insertOne(req.body)
+		.then(val => {
+			placesCollection
+			.find({})
+			.toArray()
+			.then(val => {
+				return res.status(200).json({ confirmation: 'success', message: val});
+			});
+		})
+	});
+
+	app.get('/lessthan/:count', (req, res) => {
+		console.log(req.params.count);
+		placesCollection.find({
+			sales: {
+				$lt: Number(req.params.count)
+			}
+		})
+		.toArray()
+		.then(val => {
+			res.status(200).json({confirmation: 'success', message: val});
+		});
+	});
+
+	app.get('/sum/:industry', (req, res) => {
+		placesCollection
+		.aggregate([
+			{
+				$match: {
+					industry: req.params.industry
+				}
+			}, {
+				$group: {
+					_id: 1,
+					sumSales: { $sum: "$sales" }
+				}
+			}
+		])
+		.toArray()
+		.then(val => {
+			res.status(200).json({confirmation: 'success', message: val[0].sumSales});
+		});
+	});
+
+	app.get('/between/:min/:max', (req, res) => {
+		placesCollection.find({
+			sales: {
+				$lte: Number(req.params.max),
+				$gte: Number(req.params.min)
+			}
+		})
+		.sort({
+			sales: 1
+		})
+		.toArray()
+		.then(val => {
+			res.status(200).json({confirmation: 'success', message: val});
+		});
 	});
 });
 
