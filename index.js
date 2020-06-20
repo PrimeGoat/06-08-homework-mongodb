@@ -21,15 +21,14 @@ MongoClient.connect(uri, {
 	app.use(express.json());
 	app.use(express.urlencoded({ extended: false }));
 
-	//\*\*\*EVERYTHING EXCEPT app.listen.... GOES IN HERE
-
 	app.get('/', (req, res)=>{
-		placesCollection.countDocuments()
-			.then(val => {
-				console.log("Count is ", val);
-			})
-
-		return res.status(200).json({ confirmation: 'success'});
+		placesCollection.find({}).toArray()
+		.then(val => {
+			return res.status(200).json({confirmation: "success", message: val}); 
+		})
+		.catch(err => {
+			return res.status(500).json({confirmation: "failed", err});
+		});
 	});
 
 	app.get('/count', (req, res)=>{
@@ -80,9 +79,8 @@ MongoClient.connect(uri, {
 		return res.status(200).json({ confirmation: 'success', message: 'Collection Dropped'});
 	});
 
-	// This isn't working
 	app.delete('/delete/:name', (req, res) => {
-		placesCollection.deleteMany({
+		placesCollection.deleteOne({
 			"name": req.params.name
 		})
 		.then(val => {
@@ -151,6 +149,17 @@ MongoClient.connect(uri, {
 		.toArray()
 		.then(val => {
 			res.status(200).json({confirmation: 'success', message: val});
+		});
+	});
+
+	app.get('/insertmany', (req, res) => {
+		placesCollection.deleteMany({})
+		.then((val) => {
+			addCollection(placesCollection);
+			return res.status(200).json({confirmation: 'success', message: 'First, ' + val.deletedCount + ' were deleted, then documents created.'});
+		})
+		.catch(err => {
+			return res.status(500).json({confirmation: 'failed', message: err});
 		});
 	});
 });
